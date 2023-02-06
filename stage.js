@@ -5,7 +5,7 @@ export const stage = new Stage([greeterScene])
 greeterScene.enter((ctx) =>
 		{
 					ctx.replyWithHTML(
-						`Вы вошли в режим добавления работ\n\n`+
+						`Вы вошли в режим добавления работ\n`+
 						`<i>Добавьте работы по шаблону</i>`,
 				)
 				

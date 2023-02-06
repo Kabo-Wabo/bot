@@ -1,9 +1,13 @@
-import { TOKEN } from './config.js'
+import { TOKEN, admin_id } from './config.js'
 import Telegraf from 'telegraf'
 import session from 'telegraf/session.js'
 import { greeterScene, stage } from './stage.js'
+import { connection } from './db.js'
 import { getMainMenu, yesNoKeyboard, getMainKeyboard } from './keyboards.js'
-import { getMyTasks, addTask, deleteTask } from './db.js'
+
+
+
+
 
 const bot = new Telegraf(TOKEN)
 bot.use(session())
@@ -15,66 +19,29 @@ bot.start(ctx => {
 
 
 bot.use(stage.middleware())
+
 bot.command('/a', async ctx => {
-try {ctx.scene.enter('greeter')}
-catch {console.error(err)}
-})
+try {
+for (let i of admin_id) {
 
-
-bot.start(ctx => {
-    ctx.replyWithHTML(
-        'Приветсвую в <b>Боте Москоукран</b>\n\n'+
-        'Чтобы быстро добавить задачу, просто напишите ее и отправьте боту',
-        getMainMenu())
-
-})
-
-
-bot.hears('Мои задачи', async ctx => {
-    try {
-    const tasks = await getMyTasks()
-    let result = ''
-
-    for (let i = 0; i < tasks.length; i++) {
-        result = result + `[${i+1}] ${tasks[i]}\n`
-    }
-
-    ctx.replyWithHTML(
-        '<b>Список ваших задач:</b>\n\n'+
-        `${result}`
-    )
+	if (i[1] == ctx.message.from.id ) {
+		await console.log("Привет "+i[0])
+		await ctx.reply('Привет '+i[0]);
+		await ctx.scene.enter('greeter')
+		return ctx.message('Авторизация пройдена успешна')
+	}
 }
-catch {console.error(err)}
+		await ctx.reply("Ты не администратор")
+}
+catch {console.error()}
 })
 
-bot.hears('Удалить задачу', ctx => {
-    ctx.replyWithHTML(
-        'Введите фразу <i>"удалить `порядковый номер задачи`"</i>, чтобы удалить сообщение,'+
-        'например, <b>"удалить 3"</b>:'
-    )
-})
-
-bot.hears(/^удалить\s(\d+)$/, ctx => {
-    const id = Number(+/\d+/.exec(ctx.message.text)) - 1
-    deleteTask(id)
-    ctx.reply('Ваша задача успешно удалена')
-})
 
 bot.on('text', ctx => {
-    ctx.replyWithHTML(
-        `Это основной режим`
-    )
-})
+    try {ctx.replyWithHTML(`Это основной режим`)}
+	catch { console.err(error) }
+	})
 
 
-
-bot.action(['yes', 'no'], ctx => {
-    if (ctx.callbackQuery.data === 'yes') {
-        addTask(ctx.session.taskText)
-        ctx.editMessageText('Ваша задача успешно добавлена')
-    } else {
-        ctx.deleteMessage()
-    }
-})
 
 bot.launch()

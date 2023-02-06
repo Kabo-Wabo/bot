@@ -1,17 +1,10 @@
-let taskList = []
-
-export function getMyTasks() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(taskList)
-        }, 500)
-    })
-}
-
-export function addTask(text) {
-    taskList.push(text)
-}
-
-export function deleteTask(id) {
-    taskList.splice(id, 1)
-}
+import mysql from "mysql2";
+ 
+export const connection = mysql.createConnection({
+  host: "localhost",
+  user: "gg",
+  password: "28884323"
+});
+if (connection) console.log("Вход в базу данных успешен")
+ 
+connection.end();
