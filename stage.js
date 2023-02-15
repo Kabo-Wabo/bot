@@ -2,6 +2,7 @@ import Scene from 'telegraf/scenes/base.js'
 import Stage from 'telegraf/stage.js'
 export const greeterScene = new Scene('greeter') 
 export const stage = new Stage([greeterScene])
+
 greeterScene.enter((ctx) =>
 		{
 					ctx.replyWithHTML(

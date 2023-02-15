@@ -1,10 +1,28 @@
 import mysql from "mysql2";
- 
-export const connection = mysql.createConnection({
+
+const connection =  mysql.createConnection({
   host: "localhost",
   user: "gg",
-  password: "28884323"
+  password: "28884323",
+  database: "botdb"
+})
+
+function get_alldata(sql, callback){
+      
+  connection.query(sql, function(err, results){
+        if (err){ 
+          throw err;
+        }
+        return callback(results);
+})
+}
+
+var sql = "SELECT * from user";
+var allfetch = '';
+
+const alldata = get_alldata(sql, function(result){
+allfetch = result;
 });
-if (connection) console.log("Вход в базу данных успешен")
- 
-connection.end();
+connection.end()
+export {allfetch}
+
