@@ -15,9 +15,9 @@ bot.use(stage.middleware())
 bot.start(ctx => {
     ctx.replyWithHTML('Приветсвую в <b>Moscowkranbot</b>. Великий Геворк работает над ним. Сейчас мы попробуем понять кто Вы')
 	let d = whoareyou(ctx.from.id);
-	if (d=='admin') {
+	if (d[0]=='admin') {
 		ctx.scene.enter('greeter')
-		ctx.replyWithHTML('Авторизация пройдена успешна. Вы в режиме <b>диспетчера</b>')
+		ctx.replyWithHTML('Авторизация пройдена успешна. Привет <b>'+d[1].name_telegram+'</b>! Вы в режиме <b>диспетчера</b>')
 	}
 		else {
 			ctx.reply('Вы не авторизованны')
@@ -26,14 +26,9 @@ bot.start(ctx => {
 
 
 
-
-
-
-
-
 bot.on('text', ctx => {
     try {
-	ctx.replyWithHTML(`Вы не авторизованы, обратитесь к администратору `)
+	ctx.replyWithHTML(`Вы не авторизованы, обратитесь к администратору @gevork_ch , или запустите бота заново командой /start`)
  	}
 	catch { console.err(error) }
 	})
