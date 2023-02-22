@@ -1,8 +1,10 @@
 import Markup from 'telegraf/markup.js'
 
-export function getMainMenu() {
+export function DispMainMenu() {
     return Markup.keyboard([
-        ['Мои задачи', 'Удалить задачу'],
+        ['Добавить', 'Изменить', 'Удалить'],
+        ['Работы на завтра'],
+		['Отправить водителям', 'Статистика подтверждений']
     ]).resize().extra()
 }
 
@@ -13,9 +15,3 @@ export function yesNoKeyboard() {
     ], {columns: 2}).extra()
 }
 
-
-export function getMainKeyboard() {
-    return Markup.keyboard([
-        ['Мои задачи', 'Удалить задачу'],
-    ]).resize().extra()
-}

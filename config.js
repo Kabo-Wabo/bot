@@ -1,2 +1,7 @@
 ﻿export const TOKEN = '1746873328:AAFRA9BmmOExE71EkqQYh4yTygKS0tBYx3U'
-export const admin_id = [["Геворк Великий",285512812],["Ксюшка-хрюшка",466427533],["Гор прекрасный",285512814]]
+
+var currentDate = new Date()
+var day = currentDate.getDate() + 1 
+var month = currentDate.getMonth() + 1
+var year = currentDate.getFullYear()
+export const tomorrow = day+"/"+month+"/"+year;
