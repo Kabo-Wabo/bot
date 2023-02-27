@@ -8,7 +8,7 @@ import { add_newanon } from './db.js'
 
 
 
-const bot = new Telegraf(TOKEN) 
+export const bot = new Telegraf(TOKEN) 
 bot.use(session())
 bot.use(stage.middleware())
 
@@ -19,6 +19,8 @@ bot.start(ctx => {
 	// Сверяем с БД - есть ли человек в ней 
 	let d = whoareyou(ctx.from.id);
 	if (d[0]=='admin') {
+		
+		
 		ctx.scene.enter('addwork')
 		ctx.replyWithHTML('Авторизация пройдена успешна. Привет <b>'+d[1].name_telegram+'</b>! Вы в режиме <b>диспетчера</b>')
 

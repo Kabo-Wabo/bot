@@ -76,7 +76,40 @@ connection.end(function(err) {
 
 
 
+// Функция по доставанию работ из соответсвующей таблицы
+function get_works(sql, callback){
+const connection =  mysql.createConnection({
+  host: "localhost",
+  user: "gg",
+  password: "28884323",
+  database: "botdb"
+})
+
+  connection.query(sql, function(err, results){
+        if (err){ 
+          throw err;
+        }
+		console.log("Подключение открыто");
+        return callback(results);
+})
+connection.end(function(err) {
+  if (err) {
+    return console.log("Ошибка: " + err.message);
+  }
+  console.log("Подключение закрыто");
+});
+
+}
+
+var sql = "SELECT * from work";
+var allwork = '';
+var alldata = get_works(sql, function(result){
+allwork = result;
+
+});
 
 
-export {allfetch,add_newanon}
+
+
+export {allfetch,add_newanon,allwork}
 

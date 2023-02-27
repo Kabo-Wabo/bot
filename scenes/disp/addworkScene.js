@@ -3,27 +3,10 @@ import Stage from 'telegraf/stage.js'
 import addwork from '../../controllers/add_db.js'
 import { drivers, disp } from '../../controllers/drivers.js'
 import { DispMainMenu,yesNoKeyboard } from '../../keyboards.js'
+import showworkScene from './showworkScene.js'
 export const addworkScene = new Scene('addwork')
-export const stage = new Stage([addworkScene])
-// import bot from '../../app.js'
-// import {showworkScene, staged2 } from './showworkScene.js'
 
-export const showworkScene = new Scene('showwork')
-export const staged2 = new Stage([showworkScene])
-
-
-
-
-showworkScene.enter((ctx) => {
-	ctx.reply("Вы в режиме отобажения работ")
-	console.log('Режим отображения активен')
-}
-)
-
-showworkScene.on('message', (ctx) => {
-	ctx.reply("Ебать");
-})
-
+export const stage = new Stage([addworkScene, showworkScene])
 
 
 addworkScene.enter((ctx) => {
@@ -38,10 +21,12 @@ addworkScene.enter((ctx) => {
 )
 
 addworkScene.hears('Работы на завтра', (ctx) => {
-	ctx.reply('Хуй тебе а не работы');
-	ctx.scene.enter('showworkScene');
+	ctx.scene.enter('showwork')
+	console.log('Хуй')
 	//ctx.scene.leave()
 })
+
+
 
 addworkScene.on('message', (ctx) => {
 
@@ -116,7 +101,7 @@ addworkScene.on('message', (ctx) => {
 									if (ctx.callbackQuery.data === 'yes') {
 								let params = [driverid,jobdriver,dispid,jobdisp];
 								let fibish = addwork(job, params);
-								ctx.reply('В базу данных добавлена новая работа')
+								ctx.reply('В базу данных добавлена новая работа',DispMainMenu)
 									} else {
 										ctx.deleteMessage()
 									}
