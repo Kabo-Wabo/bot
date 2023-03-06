@@ -1,23 +1,17 @@
-import {allfetch} from '../db.js'
+import {getalluser} from '../db.js'
+var y
+/* var y = 3;
+export function whoareyou(x) {
 
-function whoareyou(x) {
-	
-var user = "unknown"
-var params = ""
 
-allfetch.forEach(function(entry) {
+return y;
 
- if (entry.id_telegram == x) {
-	if (entry.role == 1) user = 'admin'; params = entry ;
-	if (entry.role == 2) user = 'driver'; params = entry;
-	if (entry.role == 3) user = 'boss'; params = entry;
-	if (!entry.role) user = 'unknown_inbd'; params = entry;
- }
+} */
+export async function whoareyou(x){
+	let d = await getalluser();
+	let user = d.find(item => item.id_telegram == x);
+	console.log(user);
+if (user) { return (user); }
+else {return (3);} 
 
-});
-return [user,params];
 }
-
-
-
-export { whoareyou };

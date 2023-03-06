@@ -11,8 +11,8 @@ export function DispMainMenu() {
 
 export function ShowworkKeyboard() {
     return Markup.keyboard([
-        ['Добавить', 'Изменить', 'Удалить'],
-        ['Отобразить'],
+        ['Назад', 'Изменить по ID', 'Удалить по ID'],
+        ['Все', 'Кратко', 'Водитель'],
     ]).resize().extra()
 }
 
@@ -23,3 +23,10 @@ export function yesNoKeyboard() {
     ], {columns: 2}).extra()
 }
 
+export function actionWithwork() {
+    return Markup.inlineKeyboard([
+        Markup.callbackButton('Удалить', 'deletework'),
+        Markup.callbackButton('Изменить', 'chahgework'),
+        Markup.callbackButton('Назад', 'back_to_work'),
+    ], {columns: 3}).extra()
+}

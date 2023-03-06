@@ -15,7 +15,7 @@ let $job = job;
 let $params = params;
 
 if (connection) console.log("Соединение с базой установлено")
-  var sql = "INSERT INTO work (driver_id_tel, phone, time, address, phone_name, firm, pererabotka, manager_id, add_date, rebuit, approved_by_d, height) values ?";
+  var sql = "INSERT INTO work (driver_id_tel, phone, time, address, phone_name, firm, pererabotka, manager_id, add_date, rebuit, approved_by_disp, height) values ?";
 
 										
 										// Нет формы оплаты, переработки
@@ -30,7 +30,7 @@ const currentDate = new Date();
   var $manager_id = $params[2]
   var $add_date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
   var $rebuit = 0 
-  var $approved_by_d = 0 
+  var $approved_by_disp = 0 
   var $height = job[1] 
   
   var values = [
@@ -44,7 +44,7 @@ const currentDate = new Date();
   $manager_id,
   $add_date,
   $rebuit,
-  $approved_by_d,
+  $approved_by_disp,
   $height]
   ]
   

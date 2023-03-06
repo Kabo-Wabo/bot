@@ -7,43 +7,45 @@ import { whoareyou } from './controllers/check_id.js'
 import { add_newanon } from './db.js' 
 
 
-
 export const bot = new Telegraf(TOKEN) 
 bot.use(session())
 bot.use(stage.middleware())
 
+
+
 // Старт позволяет понять, кто перед нами - проверяем по его индификатору, есть ли он в базе данных.
 bot.start(ctx => {
-    ctx.replyWithHTML('Приветсвую в <b>Moscowkranbot</b>. Великий Геворк работает над ним. Сейчас мы попробуем понять кто Вы')
-
-	// Сверяем с БД - есть ли человек в ней 
-	let d = whoareyou(ctx.from.id);
-	if (d[0]=='admin') {
+	
+	ctx.reply("Приветствуем Вас в нашем уютном боте!");
+	ctx.reply("Напиши мне что-нибудь, чтобы активировать систему");
 		
-		
-		ctx.scene.enter('addwork')
-		ctx.replyWithHTML('Авторизация пройдена успешна. Привет <b>'+d[1].name_telegram+'</b>! Вы в режиме <b>диспетчера</b>')
-
-		//bot.telegram.sendMessage(890097599,'ПЛОР ты меня слышишь? ')
-	}
-
-	if (d[0]=='unknown_inbd') {
-		ctx.reply('Вы не авторизованны, но мы уже знаем о Вас')
-	}
-
-	if (d[0]=='unknown') {
-			add_newanon(ctx.message);  // Передаем данные в функцию добавление в БД нового пользователя
-			ctx.reply('Вы не авторизованны')
-	}
 })
 
 
 
 bot.on('text', ctx => {
-    try {
-	ctx.replyWithHTML(`Вы не авторизованы, обратитесь к администратору @gevork_ch , или запустите бота заново командой /start`)
- 	}
-	catch { console.err(error) }
+	async function startid(){
+	let d =  await whoareyou(ctx.from.id)
+	if (d.role==1) {
+		ctx.scene.enter('addwork')
+		ctx.replyWithHTML('Авторизация пройдена успешна. Привет <b>' + d.name_telegram + '! </b>Вы в режиме <b>диспетчера</b>')
+
+	}
+
+	if (d.role==0) {
+		ctx.reply('Вам не назначена никакая роль в нашей системе. Обратитесь к администратору @gevork_ch')
+	}
+
+	if (d==3) {
+		console.log("dsa");
+			add_newanon(ctx.message);  // Передаем данные в функцию добавление в БД нового пользователя
+			ctx.reply('Вы не авторизованны, но мы Вас добавили')
+			ctx.reply('Чтобы ускорить работу в системе, напишите в личку администратору @gevork_ch сообщение в формате "Привет я авторизовался в боте, меня зовут ****, я вожу *** борт"')
+			bot.telegram.sendMessage(285512812,'<b>Добавлен новый пользователь с ID'+ctx.from.id+'</b>')
+	}
+}	
+startid()
+
 })
 
 

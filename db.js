@@ -1,12 +1,11 @@
 import mysql from "mysql2";
-var again = 0
-
+import mysqlPromise from 'mysql2/promise.js';
 // Создание соединения
 
-
+var all;
 
 // Функция для вытаскивания всех данных
-function get_alldata(sql, callback){
+export function get_alldata(sql, callback){
 const connection =  mysql.createConnection({
   host: "localhost",
   user: "gg",
@@ -18,23 +17,27 @@ const connection =  mysql.createConnection({
         if (err){ 
           throw err;
         }
-		console.log("Подключение открыто");
+		console.log("Подключение для всех данных открыто");
         return callback(results);
 })
 connection.end(function(err) {
   if (err) {
     return console.log("Ошибка: " + err.message);
   }
-  console.log("Подключение закрыто");
+  console.log("Подключение для всех данных закрыто");
 });
 
 }
 
-var sql = "SELECT * from user";
-var allfetch = '';
-var alldata = get_alldata(sql, function(result){
-allfetch = result;
-});
+
+// Нормальная асинхронная функция блядь
+
+export async function getalluser() {
+  const connection = await mysqlPromise.createConnection({host:'localhost', user: 'gg', password: "28884323",database: 'botdb'});
+  const [rows,fields] = await connection.execute('SELECT * FROM user');
+  return rows;
+}
+
 
 
 
@@ -48,28 +51,17 @@ const connection =  mysql.createConnection({
   database: "botdb"
 })
 
-
-if (again !== new_guy.from.id) {
   var sql2 = "INSERT INTO user (id_telegram,  nickname_telegram, name_telegram) values ('"+new_guy.from.id+"','"+ new_guy.from.username +"','"+ new_guy.from.first_name+"')";
   connection.query(sql2, function(err) {
     if (err) throw err;
     else console.log("Успешно добавлен новый пользователь")
-	again = new_guy.from.id;
   });
-}
-else{
-console.log("Уже есть такой"); 
-var alldata = get_alldata(sql, function(result){
-allfetch = result;
-}
-);
-}
 
 connection.end(function(err) {
   if (err) {
     return console.log("Ошибка: " + err.message);
   }
-  console.log("Подключение закрыто");
+  console.log("Подключение для добавления нового пользователя закрыто");
 });
 
 }
@@ -89,27 +81,27 @@ const connection =  mysql.createConnection({
         if (err){ 
           throw err;
         }
-		console.log("Подключение открыто");
+		console.log("Подключение для доставания всех из соответсвующей открыто");
         return callback(results);
 })
 connection.end(function(err) {
   if (err) {
     return console.log("Ошибка: " + err.message);
   }
-  console.log("Подключение закрыто");
+  console.log("Подключение для доставания всех из соответсвующих закрыто");
 });
 
 }
 
-var sql = "SELECT * from work";
+/* var sql = "SELECT * from work";
 var allwork = '';
 var alldata = get_works(sql, function(result){
 allwork = result;
 
 });
+ */
 
 
 
-
-export {allfetch,add_newanon,allwork}
+export {add_newanon}
 
