@@ -1,16 +1,10 @@
 import {getalluser} from '../db.js'
-var y
-/* var y = 3;
-export function whoareyou(x) {
 
 
-return y;
-
-} */
 export async function whoareyou(x){
 	let d = await getalluser();
 	let user = d.find(item => item.id_telegram == x);
 if (user) { return (user); }
-else {return (3);} 
+else {return (3);}  // 3 - роль означающая, что человека ранее в боте не было и его надо добавить
 
 }

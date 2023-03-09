@@ -1,6 +1,7 @@
 import { drivers, disp } from './drivers.js'
 import mysql from "mysql2";
-import {gettomorrowDate} from '../config.js'
+import {setDate} from '../functions.js'
+import {sqlparams} from '../config.js'
 
 export function updatework(job, id, ctx){
 
@@ -22,12 +23,7 @@ let dispid
 		})	
 	
 
-const connection =  mysql.createConnection({
-  host: "localhost",
-  user: "gg",
-  password: "28884323",
-  database: "botdb"
-})
+const connection =  mysql.createConnection(sqlparams)
 
 var value = job[8].replace(/\D/g, "");
 var type = job[8].replace(/[^А-Яа-яЁё]/g,'')
@@ -48,7 +44,7 @@ if (connection) console.log("Соединение с базой для обно�
 ",manager_name = '"+jobdisp+"'"+
 ",payment_type = '"+type+"'"+
 ",payment_value =  '"+value+"'"+
-",work_date = '"+gettomorrowDate()+"'"+
+",work_date = '"+setDate(+1)+"'"+
 " WHERE id = "+id+"";
 
 

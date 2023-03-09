@@ -1,16 +1,9 @@
-﻿export const TOKEN = '1746873328:AAFRA9BmmOExE71EkqQYh4yTygKS0tBYx3U'
+﻿export const TOKEN = '1746873328:AAHyUDs3fZ9_880dm7eJRfe_pTvgTtXd320';
 
-
-export function gettomorrowDate(){
- var tomorrowDate = new Date();
-	tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-	tomorrowDate = tomorrowDate.toISOString().split('T')[0]
-return tomorrowDate
+export const sqlparams  = {
+  host: "localhost",
+  user: "gg",
+  password: "28884323",
+  database: "botdb"
 }
 
-export function gettodayDate(){
- var todayDate = new Date();
-	todayDate.setDate(todayDate.getDate());
-	todayDate = todayDate.toISOString().split('T')[0]
-return todayDate
-}

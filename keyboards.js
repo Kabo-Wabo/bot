@@ -1,10 +1,10 @@
 import Markup from 'telegraf/markup.js'
-
+import {setDate, sliceryear} from './functions.js'
 
 export function DispMainMenu() {
     return Markup.keyboard([
-        ['Добавить', 'Спец запрос', 'Удалить'],
-        ['Работы на завтра и на сегодня'],
+        [ 'Спец запрос', 'Мои', 'Данные'],
+ [sliceryear(setDate(-4)), sliceryear(setDate(-3)),  sliceryear(setDate(-2)),  sliceryear(setDate(-1)), sliceryear(setDate(0)), sliceryear(setDate(+1))] ,
     ]).resize().extra()
 }
 
@@ -21,10 +21,6 @@ export function yesNoKeyboard() {
     ], {columns: 2}).extra()
 }
 
-export function actionWithwork() {
-    return Markup.inlineKeyboard([
-        Markup.callbackButton('Удалить', 'deletework'),
-        Markup.callbackButton('Изменить', 'chahgework'),
-        Markup.callbackButton('Назад', 'back_to_work'),
-    ], {columns: 3}).extra()
-}
+
+
+
