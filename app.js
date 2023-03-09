@@ -1,4 +1,4 @@
-import { TOKEN, tomorrow } from './config.js'
+import { TOKEN } from './config.js'
 import Telegraf from 'telegraf'
 import session from 'telegraf/session.js'
 import { stage } from './scenes/disp/addworkScene.js'
@@ -41,7 +41,7 @@ bot.on('text', ctx => {
 			add_newanon(ctx.message);  // Передаем данные в функцию добавление в БД нового пользователя
 			ctx.reply('Вы не авторизованны, но мы Вас добавили')
 			ctx.reply('Чтобы ускорить работу в системе, напишите в личку администратору @gevork_ch сообщение в формате "Привет я авторизовался в боте, меня зовут ****, я вожу *** борт"')
-			bot.telegram.sendMessage(285512812,'<b>Добавлен новый пользователь с ID'+ctx.from.id+'</b>')
+			bot.telegram.sendMessage(285512812,'Добавлен новый пользователь с ID'+ctx.from.id+'')
 	}
 }	
 startid()

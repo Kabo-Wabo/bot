@@ -10,7 +10,6 @@ return y;
 export async function whoareyou(x){
 	let d = await getalluser();
 	let user = d.find(item => item.id_telegram == x);
-	console.log(user);
 if (user) { return (user); }
 else {return (3);} 
 

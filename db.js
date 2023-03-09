@@ -6,6 +6,8 @@ var all;
 
 // Функция для вытаскивания всех данных
 export function get_alldata(sql, callback){
+
+
 const connection =  mysql.createConnection({
   host: "localhost",
   user: "gg",

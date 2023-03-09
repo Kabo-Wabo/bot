@@ -3,16 +3,14 @@ import Markup from 'telegraf/markup.js'
 
 export function DispMainMenu() {
     return Markup.keyboard([
-        ['Добавить', 'Изменить', 'Удалить'],
-        ['Работы на завтра'],
-		['Отправить водителям', 'Статистика подтверждений']
+        ['Добавить', 'Спец запрос', 'Удалить'],
+        ['Работы на завтра и на сегодня'],
     ]).resize().extra()
 }
 
 export function ShowworkKeyboard() {
     return Markup.keyboard([
-        ['Назад', 'Изменить по ID', 'Удалить по ID'],
-        ['Все', 'Кратко', 'Водитель'],
+        ['Назад', 'Все', 'Кратко'],
     ]).resize().extra()
 }
 
