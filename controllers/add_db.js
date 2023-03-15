@@ -52,9 +52,7 @@ export default function addwork(job) {
   var $manager_name = jobdisp
   var $payment_type = type
   var $payment_value = value
-  var currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() + 1);
-  var $work_date = currentDate;
+  var $work_date = job[10];
 
   var values = [
     [$driver_id_tel,

@@ -1,6 +1,6 @@
 import Scene from 'telegraf/scenes/base.js'
 // import Markup from 'telegraf/markup.js'
-import { ShowworkKeyboard,backKeyboard } from '../../keyboards.js'
+import { ShowworkKeyboard, backKeyboard } from '../../keyboards.js'
 const ywork = new Scene('showworkScene')
 import { shorttotelegram, confirmerwork, actyalwork, setDate } from '../../functions.js'
 import { get_alldata } from '../../db.js'
@@ -13,19 +13,19 @@ ywork.enter((ctx) => {
 	// Быстрое отображение всех добавленных менеджером сегодняшних работ
 
 	console.log()
-	if(ctx.match=="Мои") {
-		var sqlmyworkstoday = "SELECT * FROM work WHERE manager_id = '"+ctx.update.message.from.id+"' AND add_date LIKE '"+setDate(0)+"%'"
+	if (ctx.match == "Мои") {
+		var sqlmyworkstoday = "SELECT * FROM work WHERE manager_id = '" + ctx.update.message.from.id + "' AND add_date LIKE '" + setDate(0) + "%'"
 		get_alldata(sqlmyworkstoday, (result) => {
 			actyalwork(result, ctx);
 		})
-		ctx.replyWithHTML('Только полное отображение заявок',backKeyboard())
+		ctx.replyWithHTML('Только полное отображение заявок', backKeyboard())
 	}
 	else {
-	// Не буду же я морочиться с годами пока? :)	
-	date = 2023 + "-" + ctx.message.text;
-	sql = "SELECT * from work where work_date ='" + date + "'  ORDER BY driver_name "
-	ctx.replyWithHTML('Вы в режиме отображения работ за ' + date + '. Выберите пункт меню', ShowworkKeyboard());
-	console.log('Режим отображения активен')
+		// Не буду же я морочиться с годами пока? :)	
+		date = 2023 + "-" + ctx.message.text;
+		sql = "SELECT * from work where work_date ='" + date + "'  ORDER BY driver_name "
+		ctx.replyWithHTML('Вы в режиме отображения работ за ' + date + '. Выберите пункт меню', ShowworkKeyboard());
+		console.log('Режим отображения активен')
 	}
 })
 
@@ -85,8 +85,8 @@ ywork.hears(/ID/, (ctx) => {
 })
 
 ywork.on('message', (ctx) => {
-	if(!ctx.response) {ctx.replyWithHTML('Только полное отображение заявок или назад',backKeyboard())}
-	else {ctx.replyWithHTML('Вы в режиме отображения работ за ' + date + '. ', ShowworkKeyboard());}
+	if (!ctx.response) { ctx.replyWithHTML('Только полное отображение заявок или назад', backKeyboard()) }
+	else { ctx.replyWithHTML('Вы в режиме отображения работ за ' + date + '. ', ShowworkKeyboard()); }
 
 })
 

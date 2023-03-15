@@ -1,4 +1,5 @@
-var d = "2023-03-08"
-var regexp = /^202[34]\-[0-9][0-9]\-[0-9][0-9]$/
-var time_ver = regexp.test(d);
-console.log(time_ver);
+var d = "СТС 5 борт новый 2.jpg"
+var regexp1 = /\.jpg$/
+var regexp2 = /\.jpeg$/
+var regexp3 = /\.pdf$/
+if( /\.jpg$/.test(d) || /\.jpeg$/.test(d) || /\.pdf$/.test(d)) {console.log('Ըես')}

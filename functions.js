@@ -2,7 +2,7 @@ import Markup from 'telegraf/markup.js'
 import { DispMainMenu, yesNoKeyboard } from './keyboards.js'
 import { drivers, disp } from './controllers/drivers.js'
 import { updatework } from './controllers/update.js'
-import fs  from 'fs' 
+import fs from 'fs'
 // Функция для вывода всех данных в телеграм
 export function worktotelegram(allwork, ctx) {
 	for (let i = 0; i < allwork.length; i++) {
@@ -49,22 +49,17 @@ export function shorttotelegram(allwork, ctx) {
 
 
 export function confirmerwork(job, ctx) {
+
 	var $id
 	// Проверяем есть ли первый ID который указывает, что нужно не добавить а обновить
-	var myArray = /ID/.exec(job[0]);
+	var myArray = /^ID/.exec(job[0]);
 	if (job.length == 11 && myArray) {
 		$id = job[0].replace(/[^0-9]/g, "")
-		console.log($id)
-		console.log(job)
 		job.splice(0, 1)
-		console.log(job);
-
 	}
-	
-	
 
-
-	if (job.length == 10) {
+	if (job.length == 10) { job.push(setDate(1)) }
+	if (job.length == 11) {
 		let jobdriver
 		drivers.forEach(function (entry) {
 			if (job[0] == entry[0]) {
@@ -106,10 +101,16 @@ export function confirmerwork(job, ctx) {
 								if (job[8].substring(0, 3) == 'нал' || job[8] == 'бн' || job[8].substring(0, 5) == 'залог') {
 									console.log("Форма оплаты определена")
 
-									/// Вот основа проверки , если ID нет то добавляем новую работу
+									/// Если последний элемент дата (а он дата, т.к. мы сами его и определяли) - то дальше
+									if (/^202[34]\-[0-9][0-9]\-[0-9][0-9]$/.test(job[10])) {
+										/// Вот основа проверки , если ID нет то добавляем новую работу
 
-									if (!$id) { replyconfirmed(job, ctx) }
-									else { updatework(job, $id, ctx); $id = '' }
+										if (!$id) { replyconfirmed(job, ctx) }
+										else { updatework(job, $id, ctx); $id = '' }
+									}
+									else {
+										ctx.reply('Что-то не так с датой? Как ты умудрился?!?!')
+									}
 
 								}
 								else { ctx.reply('Введите форму оплаты (нал*сумма*, бн, залог*сумма*)') }
@@ -126,9 +127,9 @@ export function confirmerwork(job, ctx) {
 	}
 	else {
 		ctx.replyWithHTML(
-			`Что-то не введено. Должно быть 10 значений через запятую, которые пройдут валидацию\n` +
+			`Что-то не введено. Должно быть 11 значений через запятую, которые пройдут валидацию\n` +
 			`<i>Добавьте работы по шаблону</i>\n` +
-			`1 Водитель (только актуальные водители),\n 2 Метраж( две цифры + буква (т,к,в,б),\n 3 Время (формат хх:хх),\n 4 Адрес (любое значение - но не ставьте запятые!),\n 5 Телефон (начинается с 8 и далее +10 цифр),\n 6 Контакт (любое значение), \n 7 Диспетчер (только наши),\n 8 Переработка (есть, нет, утч) ,\n 9 Форма оплаты (бн, налсумма,залогсумма)\n 10 Фирма (любое значение)\n`
+			`1 Водитель (только актуальные водители),\n 2 Метраж( две цифры + буква (т,к,в,б),\n 3 Время (формат хх:хх),\n 4 Адрес (любое значение - но не ставьте запятые!),\n 5 Телефон (начинается с 8 и далее +10 цифр),\n 6 Контакт (любое значение), \n 7 Диспетчер (только наши),\n 8 Переработка (есть, нет, утч) ,\n 9 Форма оплаты (бн, налсумма,залогсумма)\n 10 Фирма (любое значение)\n 11 Дата (Если не указывать, то по умолчанию - завтра)`
 			, DispMainMenu())
 	}
 }
@@ -146,9 +147,11 @@ export function replyconfirmed(job, ctx) {
 		`\n<i>&#128511;  Диспетчер</i>:     ` + job[6] +
 		`\n<i>&#9654;  Переработка</i>:     ` + job[7] +
 		`\n<i>&#128178;  Форма оплаты</i>:     ` + job[8] +
-		`\n<i>&#128178;  Фирма</i>:     ` + job[9] + `\n ---------------`, yesNoKeyboard()
+		`\n<i>&#128178;  Фирма</i>:     ` + job[9] +
+		`\n<i>&#128178;  Дата</i>:     ` + job[10] + `\n ---------------`, yesNoKeyboard()
 	)
-	return job;
+	ctx.session.work = ctx.message.text + ',' + job[10]
+
 }
 
 
@@ -164,7 +167,19 @@ export function setDate(x) {
 
 // Функция разбития на массив сообщения
 export function mestojob(ctx) {
-	let job = ctx.session.taskText.split(',')
+	let job = ctx.message.text.split(',')
+	job.forEach(function (item, i, job) {
+		job[i] = item.trim()
+	});
+	return job;
+}
+
+// Я очень долго мучался чтобы сделать одну функцию на две, но первая работает когда это первое сообщение
+// а второе когда идет ответ ДА на проверенные данные. Долго мучался, забил
+
+export function mestojob2(ctx) {
+	console.log(ctx);
+	let job = ctx.update.callback_query.message.text.split(',')
 	job.forEach(function (item, i, job) {
 		job[i] = item.trim()
 	});
@@ -188,12 +203,14 @@ export function sliceryear(str) {
 }
 
 
-export async function listDir() {
-  try {
-    return await fs.promises.readdir('./docs/');
-  } catch (err) {
-    console.error('Error occurred while reading directory!', err);
-  }
+export async function listDir(ctx, path) {
+	try {
+		return await fs.promises.readdir(path);
+	} catch (err) {
+		ctx.reply("Запрос выдал ошибку")
+		console.error('Error occurred while reading directory!', err);
+
+	}
 }
 
 

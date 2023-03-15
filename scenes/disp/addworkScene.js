@@ -2,7 +2,7 @@ import Scene from 'telegraf/scenes/base.js'
 import Stage from 'telegraf/stage.js'
 import addwork from '../../controllers/add_db.js'
 import { DispMainMenu } from '../../keyboards.js'
-import { confirmerwork, mestojob, actyalwork } from '../../functions.js'
+import { confirmerwork, mestojob,mestojob2, actyalwork } from '../../functions.js'
 import ywork from './showWork.js'
 import docs from './docs.js'
 import specQuery from './specQuery.js'
@@ -16,7 +16,7 @@ addworkScene.enter((ctx) => {
 	ctx.replyWithHTML(
 		`Вы вошли в режим добавления работ\n` +
 		`<i>Добавьте работы по шаблону</i>\n` +
-		`1 Водитель,\n 2 Метраж,\n 3 Время,\n 4 Адрес,\n 5 Телефон,\n 6 Контакт, \n 7 Диспетчер,\n 8 Переработка,\n 9 Форма оплаты\n 10 Фирма\n`
+		`1 Водитель,\n 2 Метраж,\n 3 Время,\n 4 Адрес,\n 5 Телефон,\n 6 Контакт, \n 7 Диспетчер,\n 8 Переработка,\n 9 Форма оплаты\n 10 Фирма\n 11 Дата (по умолчанию - завтра) `
 		, DispMainMenu())
 
 	console.log('Режим добавления активен')
@@ -47,14 +47,9 @@ addworkScene.hears('Мои', (ctx) => {
 
 
 addworkScene.action('yes', (ctx) => {
-	console.log(ctx.session.taskText);
-	
-	let job = mestojob(ctx)
-	
-	let fibish = addwork(job);
-
-	ctx.reply('В базу данных добавлена новая работа', DispMainMenu)
-
+ctx.update.callback_query.message.text = ctx.session.work;
+let fibish = addwork(mestojob2(ctx));
+ctx.reply('В базу данных добавлена новая работа', DispMainMenu)
 })
 
 addworkScene.action('no', ctx => {
@@ -62,7 +57,7 @@ addworkScene.action('no', ctx => {
 })
 
 addworkScene.on('message', (ctx) => {
-	ctx.session.taskText = ctx.message.text // Не придумал как сделать без этой строчки
+	//ctx.session.taskText = ctx.message.text // Не придумал как сделать без этой строчки
 	confirmerwork(mestojob(ctx), ctx);
 })
 

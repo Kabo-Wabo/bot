@@ -1,6 +1,6 @@
 import Scene from 'telegraf/scenes/base.js'
-import { backKeyboard,ShowworkKeyboard } from '../../keyboards.js'
-import { actyalwork,confirmerwork,shorttotelegram } from '../../functions.js'
+import { backKeyboard, ShowworkKeyboard } from '../../keyboards.js'
+import { actyalwork, confirmerwork, shorttotelegram } from '../../functions.js'
 import { get_alldata } from '../../db.js'
 
 // По сути это аналог просмотра, но переопределять функции смысла не вижу
@@ -27,7 +27,7 @@ specQuery.enter((ctx) => {
         `Пример запроса 3:\n <b>Оплата:нал; Водитель: Гаджи, Аро1</b>`, backKeyboard()
     )
 
-}) 
+})
 
 
 
@@ -36,46 +36,46 @@ specQuery.hears('Назад', (ctx) => {
 })
 
 specQuery.action(/del (\d+)/gi, (ctx) => {
-	var sql = "DELETE FROM work where id = '" + ctx.match[1] + "'"
-	get_alldata(sql, function () {
-		ctx.reply("Удалили работу с ID" + ctx.match[1]);
-		ctx.deleteMessage()
-	});
+    var sql = "DELETE FROM work where id = '" + ctx.match[1] + "'"
+    get_alldata(sql, function () {
+        ctx.reply("Удалили работу с ID" + ctx.match[1]);
+        ctx.deleteMessage()
+    });
 });
 
 
 // Если слышим команды изменения то переходим сюда
 specQuery.action(/changework (\d+)/gi, (ctx) => {
-	var sql = "SELECT * FROM work where id = '" + ctx.match[1] + "'";
-	get_alldata(sql, function (result) {
-		if (!result[0].payment_value) { result[0].payment_value = '' }
-		var d = "ID" + result[0].id + "," + result[0].driver_name + "," + result[0].height + "," + result[0].time + "," + result[0].address + "," + result[0].phone + "," + result[0].phone_name + "," + result[0].manager_name + "," + result[0].pererabotka + "," + result[0].payment_type + result[0].payment_value + "," + result[0].firm;
-		ctx.replyWithHTML("<b>&#10071;Не удаляйте ID с цифрами вначале&#10071;</b>\n Скопируйте сообщение снизу в форму и отредактируйте то, что нужно");
-		ctx.reply(d);
-		ctx.deleteMessage()
-	});
+    var sql = "SELECT * FROM work where id = '" + ctx.match[1] + "'";
+    get_alldata(sql, function (result) {
+        if (!result[0].payment_value) { result[0].payment_value = '' }
+        var d = "ID" + result[0].id + "," + result[0].driver_name + "," + result[0].height + "," + result[0].time + "," + result[0].address + "," + result[0].phone + "," + result[0].phone_name + "," + result[0].manager_name + "," + result[0].pererabotka + "," + result[0].payment_type + result[0].payment_value + "," + result[0].firm;
+        ctx.replyWithHTML("<b>&#10071;Не удаляйте ID с цифрами вначале&#10071;</b>\n Скопируйте сообщение снизу в форму и отредактируйте то, что нужно");
+        ctx.reply(d);
+        ctx.deleteMessage()
+    });
 
 })
 
 specQuery.hears(/ID/, (ctx) => {
-	let job = ctx.match.input.split(',')
-	job.forEach(function (item, i, job) {
-		job[i] = item.trim()
-	});
-	confirmerwork(job, ctx);
+    let job = ctx.match.input.split(',')
+    job.forEach(function (item, i, job) {
+        job[i] = item.trim()
+    });
+    confirmerwork(job, ctx);
 
 })
 
 specQuery.hears('Все', (ctx) => {
-	get_alldata(lastspecialsql, (result) => {
-		actyalwork(result, ctx);
-	})
+    get_alldata(lastspecialsql, (result) => {
+        actyalwork(result, ctx);
+    })
 })
 
 specQuery.hears('Кратко', (ctx) => {
-	get_alldata(lastspecialsql, (result) => {
-		shorttotelegram(result, ctx);
-	})
+    get_alldata(lastspecialsql, (result) => {
+        shorttotelegram(result, ctx);
+    })
 
 })
 
@@ -110,7 +110,7 @@ specQuery.on('message', (ctx) => {
                     sql = sql + "OR "
                 }
                 else { sql = sql + ")" }
-    
+
             }
         }// Получили водительей
 
@@ -125,7 +125,7 @@ specQuery.on('message', (ctx) => {
                     sql = sql + "OR "
                 }
                 else { sql = sql + ")" }
-    
+
             }
         }// Получили менеджеров
 
@@ -140,7 +140,7 @@ specQuery.on('message', (ctx) => {
                     sql = sql + "OR "
                 }
                 else { sql = sql + ")" }
-    
+
             }
         }// Получили Способы оплаты
 
@@ -155,7 +155,7 @@ specQuery.on('message', (ctx) => {
                     sql = sql + "OR "
                 }
                 else { sql = sql + ")" }
-    
+
             }
         }// Получили Фирму
 
@@ -170,7 +170,7 @@ specQuery.on('message', (ctx) => {
                     sql = sql + "OR "
                 }
                 else { sql = sql + ")" }
-    
+
             }
         }// Получили Адрес
 
@@ -178,36 +178,36 @@ specQuery.on('message', (ctx) => {
             if (sql.length > 2) { sql = sql + " AND " }
             var dr = job[i].substring(height.length, job[i].length).split(" ").join("")
             dr = dr.split('*')
-            if (dr.length==1) {sql = sql + "height='"+dr[0]+"'"}
-            if (dr.length==2) {sql = sql + "(height>'"+dr[0]+"' AND height<'"+dr[1]+"')"}
+            if (dr.length == 1) { sql = sql + "height='" + dr[0] + "'" }
+            if (dr.length == 2) { sql = sql + "(height>'" + dr[0] + "' AND height<'" + dr[1] + "')" }
 
         }// Получили Высоту
 
         if (job[i].indexOf(data) == 0) {
             console.log(job[i].indexOf(','))
             console.log(job[i].indexOf('*'))
-            if(job[i].indexOf('*')!=='-1' && job[i].indexOf(',')=='-1' && job[i].length<30) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(data.length, job[i].length).split(" ").join("")
-            dr = dr.split('*')
-            console.log(dr)
-            if (dr.length==1 && dr[0].length==10) {sql = sql + "work_date='"+dr[0]+"'"}
-            if (dr.length==2 && dr[0].length==10 && dr[1].length==10) {sql = sql + "(work_date>'"+dr[0]+"' AND work_date<'"+dr[1]+"')"}
+            if (job[i].indexOf('*') !== '-1' && job[i].indexOf(',') == '-1' && job[i].length < 30) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(data.length, job[i].length).split(" ").join("")
+                dr = dr.split('*')
+                console.log(dr)
+                if (dr.length == 1 && dr[0].length == 10) { sql = sql + "work_date='" + dr[0] + "'" }
+                if (dr.length == 2 && dr[0].length == 10 && dr[1].length == 10) { sql = sql + "(work_date>'" + dr[0] + "' AND work_date<'" + dr[1] + "')" }
             }
-            else {ctx.reply('У вас что-то не то с датой')}
+            else { ctx.reply('У вас что-то не то с датой') }
         }// Получили Дату
 
     }
-    if (sql.length>5) {
+    if (sql.length > 5) {
 
         // Итоговый запрос
         sql = "SELECT * FROM work WHERE " + sql;
-        
+
         get_alldata(sql, (result) => {
             shorttotelegram(result, ctx);
         })
         lastspecialsql = sql;
-        ctx.reply("Данные введены",ShowworkKeyboard())
+        ctx.reply("Данные введены", ShowworkKeyboard())
     }
     else {
         ctx.reply("Запрос не сформировался")
