@@ -2,7 +2,7 @@ import Markup from 'telegraf/markup.js'
 import { DispMainMenu, yesNoKeyboard } from './keyboards.js'
 import { drivers, disp } from './controllers/drivers.js'
 import { updatework } from './controllers/update.js'
-import fs from 'fs'
+import fs  from 'fs' 
 // Функция для вывода всех данных в телеграм
 export function worktotelegram(allwork, ctx) {
 	for (let i = 0; i < allwork.length; i++) {
@@ -102,11 +102,11 @@ export function confirmerwork(job, ctx) {
 									console.log("Форма оплаты определена")
 
 									/// Если последний элемент дата (а он дата, т.к. мы сами его и определяли) - то дальше
-									if (/^202[34]\-[0-9][0-9]\-[0-9][0-9]$/.test(job[10])) {
-										/// Вот основа проверки , если ID нет то добавляем новую работу
-
-										if (!$id) { replyconfirmed(job, ctx) }
-										else { updatework(job, $id, ctx); $id = '' }
+									if(/^202[34]\-[0-9][0-9]\-[0-9][0-9]$/.test(job[10])){
+									/// Вот основа проверки , если ID нет то добавляем новую работу
+									
+									if (!$id) { replyconfirmed(job, ctx) }
+									else { updatework(job, $id, ctx); $id = '' }
 									}
 									else {
 										ctx.reply('Что-то не так с датой? Как ты умудрился?!?!')
@@ -148,9 +148,9 @@ export function replyconfirmed(job, ctx) {
 		`\n<i>&#9654;  Переработка</i>:     ` + job[7] +
 		`\n<i>&#128178;  Форма оплаты</i>:     ` + job[8] +
 		`\n<i>&#128178;  Фирма</i>:     ` + job[9] +
-		`\n<i>&#128178;  Дата</i>:     ` + job[10] + `\n ---------------`, yesNoKeyboard()
+		`\n<i>&#128178;  Дата</i>:     ` + job[10] +		`\n ---------------`, yesNoKeyboard()
 	)
-	ctx.session.work = ctx.message.text + ',' + job[10]
+ctx.session.work = ctx.message.text + ','+job[10]
 
 }
 
@@ -176,7 +176,7 @@ export function mestojob(ctx) {
 
 // Я очень долго мучался чтобы сделать одну функцию на две, но первая работает когда это первое сообщение
 // а второе когда идет ответ ДА на проверенные данные. Долго мучался, забил
-
+ 
 export function mestojob2(ctx) {
 	console.log(ctx);
 	let job = ctx.update.callback_query.message.text.split(',')
@@ -191,9 +191,63 @@ export function mestojob2(ctx) {
 //Если работ нету то пишем, если есть то передаем на отобажение
 export function actyalwork(allwork, ctx) {
 	// Актуальные работы
-
 	if (allwork == "") { ctx.reply("На этот день работ в базе нет"); }
 	else { worktotelegram(allwork, ctx) }
+}
+
+export function driverwork(allwork, ctx) {
+	if (allwork == "") { ctx.reply("Для Вас пока актуальных работ нету"); }
+	else { 
+
+
+
+	allwork.forEach(function (job) {
+	if (job.payment_value == 0) {job.payment_value=''}
+	job.work_date = job.work_date.toISOString().split('T')[0]
+	if (job.work_date==setDate(0)) {job.work_date='Сегодня'}
+	if (job.work_date==setDate(1)) {job.work_date='Завтра'}
+	
+	
+	var vivod = 
+	"<b>"+job.work_date+" Время:  "+job.time+" </b>"+
+	"\n----------------------------------------------\n"+
+	"<i>&#128129;  Метраж</i>:      "+ job.height+
+	"\n<i>&#128129;  Адрес</i>:      "+ job.address+
+	"\n<i>&#128129;  Оплата</i>:      "+ job.payment_type + ' ' + job.payment_value+
+	"\n<i>&#128129;  Переработка</i>:      "+ job.pererabotka +
+	"\n<i>&#128129;  Ответсвенный</i>:      "+  job.manager_name+
+	"\n<i>&#128129;  Телефон</i>:      " + job.phone + ` ` + job.phone_name
+	
+	
+	if(job.approved_by_driver==0){
+	worknotconf(job,ctx,vivod);
+	}
+	if (job.approved_by_driver==1) {
+	workconf(job,ctx,vivod);
+	}
+
+})}
+	ctx.scene.sex = 2;
+}
+
+function worknotconf(job,ctx,vivod){
+		ctx.replyWithHTML(
+		`<b>&#10071;&#10071;&#10071;РАБОТА НЕ ПРИНЯТА&#10071;&#10071;&#10071;</b>\n\n`+
+		vivod,
+		Markup.inlineKeyboard([
+				Markup.callbackButton('Принято', 'approve'+job.id)
+			], { columns: 1 }).extra());
+}
+
+function workconf(job,ctx,vivod){
+		ctx.replyWithHTML(
+		`<b>Работа принята</b>\n`+
+		vivod,
+		Markup.inlineKeyboard([
+				Markup.callbackButton('Закончил', 'end'+job.id),
+				Markup.callbackButton('Опаздываю', 'late'+job.id),
+				Markup.callbackButton('У меня проблемы', 'troubeles'+job.id)
+			], { columns: 3 }).extra());
 }
 
 
@@ -203,14 +257,13 @@ export function sliceryear(str) {
 }
 
 
-export async function listDir(ctx, path) {
-	try {
-		return await fs.promises.readdir(path);
-	} catch (err) {
-		ctx.reply("Запрос выдал ошибку")
-		console.error('Error occurred while reading directory!', err);
-
-	}
+export async function listDir(ctx,path) {
+  try {
+    return await fs.promises.readdir(path);
+  } catch (err) {
+	ctx.reply("Не правильный запрос");
+    console.error('Error occurred while reading directory!', err);
+  }
 }
 
 

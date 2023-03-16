@@ -14,12 +14,28 @@ export function ShowworkKeyboard() {
     ]).resize().extra()
 }
 
+
+export function driverkeyboard() {
+    return Markup.keyboard([
+        ['Работы за прошлый месяц', 'Актуальные работы', 'Мои документы'],
+    ]).resize().extra()
+}
+
 export function yesNoKeyboard() {
     return Markup.inlineKeyboard([
         Markup.callbackButton('Да', 'yes'),
         Markup.callbackButton('Нет', 'no')
     ], { columns: 2 }).extra()
 }
+
+export function workerconfirmed() {
+	return	Markup.inlineKeyboard([
+				Markup.callbackButton('Закончил', 'end'),
+				Markup.callbackButton('Опаздываю', 'late'),
+				Markup.callbackButton('У меня проблемы', 'troubeles')
+			], { columns: 3 }).extra()
+}
+
 
 export function backKeyboard() {
     return Markup.keyboard([

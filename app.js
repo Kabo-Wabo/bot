@@ -49,6 +49,11 @@ bot.on('text', ctx => {
 	if (d.role==0) {
 		ctx.reply('Вам не назначена никакая роль в нашей системе. Обратитесь к администратору @gevork_ch')
 	}
+	
+	if (d.role==2) {
+		ctx.replyWithHTML('Авторизация пройдена успешна. Привет <b>' + d.name_telegram + '! </b>Вы в режиме <b>диспетчера</b>')
+		ctx.scene.enter('driver')
+	}
 
 	if (d==3) {
 		console.log("dsa");

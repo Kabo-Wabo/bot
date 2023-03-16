@@ -3,13 +3,14 @@ import Stage from 'telegraf/stage.js'
 import addwork from '../../controllers/add_db.js'
 import { DispMainMenu } from '../../keyboards.js'
 import { confirmerwork, mestojob,mestojob2, actyalwork } from '../../functions.js'
+import driver from '../driver/driverscene.js'
 import ywork from './showWork.js'
 import docs from './docs.js'
 import specQuery from './specQuery.js'
 
 
 export const addworkScene = new Scene('addwork')
-export const stage = new Stage([addworkScene, ywork, specQuery, docs])
+export const stage = new Stage([addworkScene, ywork, specQuery, docs, driver])
 
 
 addworkScene.enter((ctx) => {
