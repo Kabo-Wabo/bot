@@ -36,185 +36,210 @@ specQuery.hears('Назад', (ctx) => {
 })
 
 specQuery.action(/del (\d+)/gi, (ctx) => {
-    var sql = "DELETE FROM work where id = '" + ctx.match[1] + "'"
-    get_alldata(sql, function () {
-        ctx.reply("Удалили работу с ID" + ctx.match[1]);
-        ctx.deleteMessage()
-    });
+    try {
+        var sql = "DELETE FROM work where id = '" + ctx.match[1] + "'"
+        get_alldata(sql, function () {
+            ctx.reply("Удалили работу с ID" + ctx.match[1]);
+            ctx.deleteMessage()
+        });
+    }
+    catch (err) {
+        console.error('Ошибка в блоке f1', err);
+    }
 });
 
 
 // Если слышим команды изменения то переходим сюда
 specQuery.action(/changework (\d+)/gi, (ctx) => {
-    var sql = "SELECT * FROM work where id = '" + ctx.match[1] + "'";
-    get_alldata(sql, function (result) {
-        if (!result[0].payment_value) { result[0].payment_value = '' }
-        var d = "ID" + result[0].id + "," + result[0].driver_name + "," + result[0].height + "," + result[0].time + "," + result[0].address + "," + result[0].phone + "," + result[0].phone_name + "," + result[0].manager_name + "," + result[0].pererabotka + "," + result[0].payment_type + result[0].payment_value + "," + result[0].firm;
-        ctx.replyWithHTML("<b>&#10071;Не удаляйте ID с цифрами вначале&#10071;</b>\n Скопируйте сообщение снизу в форму и отредактируйте то, что нужно");
-        ctx.reply(d);
-        ctx.deleteMessage()
-    });
-
+    try {
+        var sql = "SELECT * FROM work where id = '" + ctx.match[1] + "'";
+        get_alldata(sql, function (result) {
+            if (!result[0].payment_value) { result[0].payment_value = '' }
+            var d = "ID" + result[0].id + "," + result[0].driver_name + "," + result[0].height + "," + result[0].time + "," + result[0].address + "," + result[0].phone + "," + result[0].phone_name + "," + result[0].manager_name + "," + result[0].pererabotka + "," + result[0].payment_type + result[0].payment_value + "," + result[0].firm;
+            ctx.replyWithHTML("<b>&#10071;Не удаляйте ID с цифрами вначале&#10071;</b>\n Скопируйте сообщение снизу в форму и отредактируйте то, что нужно");
+            ctx.reply(d);
+            ctx.deleteMessage()
+        });
+    }
+    catch (err) {
+        console.error('Ошибка в блоке f2', err);
+    }
 })
 
 specQuery.hears(/ID/, (ctx) => {
-    let job = ctx.match.input.split(',')
-    job.forEach(function (item, i, job) {
-        job[i] = item.trim()
-    });
-    confirmerwork(job, ctx);
-
+    try {
+        let job = ctx.match.input.split(',')
+        job.forEach(function (item, i, job) {
+            job[i] = item.trim()
+        });
+        confirmerwork(job, ctx);
+    }
+    catch (err) {
+        console.error('Ошибка в блоке f3', err);
+    }
 })
 
 specQuery.hears('Все', (ctx) => {
-    get_alldata(lastspecialsql, (result) => {
-        actyalwork(result, ctx);
-    })
+    try {
+        get_alldata(lastspecialsql, (result) => {
+            actyalwork(result, ctx);
+        })
+    }
+    catch (err) {
+        console.error('Ошибка в блоке f4', err);
+    }
 })
 
 specQuery.hears('Кратко', (ctx) => {
-    get_alldata(lastspecialsql, (result) => {
-        shorttotelegram(result, ctx);
-    })
-
+    try {
+        get_alldata(lastspecialsql, (result) => {
+            shorttotelegram(result, ctx);
+        })
+    }
+    catch (err) {
+        console.error('Ошибка в блоке f5', err);
+    }
 })
 
 
-specQuery.on('message', (ctx) => {
-    var sql = ''
-    let job = ctx.message.text.split(';')
+specQuery.on('text', (ctx) => {
+    try {
+        var sql = ''
+        let job = ctx.message.text.split(';')
 
-    job.forEach(function (item, i, job) {
-        job[i] = item.trim()
-    });
-    var dr = '';
-    var sql = '';
-    var driver = 'Водитель:'; //+
-    var disp = 'Диспетчер:';
-    var firm = 'Фирма:';
-    var addres = 'Адрес:';
-    var payment = 'Оплата:';
-    var height = 'Метраж:';
-    var data = 'Дата:';
+        job.forEach(function (item, i, job) {
+            job[i] = item.trim()
+        });
+        var dr = '';
+        var sql = '';
+        var driver = 'Водитель:'; //+
+        var disp = 'Диспетчер:';
+        var firm = 'Фирма:';
+        var addres = 'Адрес:';
+        var payment = 'Оплата:';
+        var height = 'Метраж:';
+        var data = 'Дата:';
 
-    for (var i = 0; i < job.length; ++i) {
+        for (var i = 0; i < job.length; ++i) {
 
-        if (job[i].indexOf(driver) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(driver.length, job[i].length).split(" ").join("")
-            dr = dr.split(',')
-            sql = sql + "(";
-            for (var y = 0; y < dr.length; y++) {
-                sql = sql + "driver_name =" + " '" + dr[y] + "' "
-                if (y < (dr.length - 1)) {
-                    sql = sql + "OR "
-                }
-                else { sql = sql + ")" }
-
-            }
-        }// Получили водительей
-
-        if (job[i].indexOf(disp) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(disp.length, job[i].length).split(" ").join("")
-            dr = dr.split(',')
-            sql = sql + "(";
-            for (var y = 0; y < dr.length; y++) {
-                sql = sql + "manager_name =" + " '" + dr[y] + "' "
-                if (y < (dr.length - 1)) {
-                    sql = sql + "OR "
-                }
-                else { sql = sql + ")" }
-
-            }
-        }// Получили менеджеров
-
-        if (job[i].indexOf(payment) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(payment.length, job[i].length).split(" ").join("")
-            dr = dr.split(',')
-            sql = sql + "(";
-            for (var y = 0; y < dr.length; y++) {
-                sql = sql + "payment_type =" + " '" + dr[y] + "' "
-                if (y < (dr.length - 1)) {
-                    sql = sql + "OR "
-                }
-                else { sql = sql + ")" }
-
-            }
-        }// Получили Способы оплаты
-
-        if (job[i].indexOf(firm) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(firm.length, job[i].length).split(" ").join("")
-            dr = dr.split(',')
-            sql = sql + "(";
-            for (var y = 0; y < dr.length; y++) {
-                sql = sql + "firm LIKE" + " '%" + dr[y] + "%' "
-                if (y < (dr.length - 1)) {
-                    sql = sql + "OR "
-                }
-                else { sql = sql + ")" }
-
-            }
-        }// Получили Фирму
-
-        if (job[i].indexOf(addres) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(addres.length, job[i].length).split(" ").join("")
-            dr = dr.split(',')
-            sql = sql + "(";
-            for (var y = 0; y < dr.length; y++) {
-                sql = sql + "address LIKE" + " '%" + dr[y] + "%' "
-                if (y < (dr.length - 1)) {
-                    sql = sql + "OR "
-                }
-                else { sql = sql + ")" }
-
-            }
-        }// Получили Адрес
-
-        if (job[i].indexOf(height) == 0) {
-            if (sql.length > 2) { sql = sql + " AND " }
-            var dr = job[i].substring(height.length, job[i].length).split(" ").join("")
-            dr = dr.split('*')
-            if (dr.length == 1) { sql = sql + "height='" + dr[0] + "'" }
-            if (dr.length == 2) { sql = sql + "(height>'" + dr[0] + "' AND height<'" + dr[1] + "')" }
-
-        }// Получили Высоту
-
-        if (job[i].indexOf(data) == 0) {
-            console.log(job[i].indexOf(','))
-            console.log(job[i].indexOf('*'))
-            if (job[i].indexOf('*') !== '-1' && job[i].indexOf(',') == '-1' && job[i].length < 30) {
+            if (job[i].indexOf(driver) == 0) {
                 if (sql.length > 2) { sql = sql + " AND " }
-                var dr = job[i].substring(data.length, job[i].length).split(" ").join("")
+                var dr = job[i].substring(driver.length, job[i].length).split(" ").join("")
+                dr = dr.split(',')
+                sql = sql + "(";
+                for (var y = 0; y < dr.length; y++) {
+                    sql = sql + "driver_name =" + " '" + dr[y] + "' "
+                    if (y < (dr.length - 1)) {
+                        sql = sql + "OR "
+                    }
+                    else { sql = sql + ")" }
+
+                }
+            }// Получили водительей
+
+            if (job[i].indexOf(disp) == 0) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(disp.length, job[i].length).split(" ").join("")
+                dr = dr.split(',')
+                sql = sql + "(";
+                for (var y = 0; y < dr.length; y++) {
+                    sql = sql + "manager_name =" + " '" + dr[y] + "' "
+                    if (y < (dr.length - 1)) {
+                        sql = sql + "OR "
+                    }
+                    else { sql = sql + ")" }
+
+                }
+            }// Получили менеджеров
+
+            if (job[i].indexOf(payment) == 0) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(payment.length, job[i].length).split(" ").join("")
+                dr = dr.split(',')
+                sql = sql + "(";
+                for (var y = 0; y < dr.length; y++) {
+                    sql = sql + "payment_type =" + " '" + dr[y] + "' "
+                    if (y < (dr.length - 1)) {
+                        sql = sql + "OR "
+                    }
+                    else { sql = sql + ")" }
+
+                }
+            }// Получили Способы оплаты
+
+            if (job[i].indexOf(firm) == 0) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(firm.length, job[i].length).split(" ").join("")
+                dr = dr.split(',')
+                sql = sql + "(";
+                for (var y = 0; y < dr.length; y++) {
+                    sql = sql + "firm LIKE" + " '%" + dr[y] + "%' "
+                    if (y < (dr.length - 1)) {
+                        sql = sql + "OR "
+                    }
+                    else { sql = sql + ")" }
+
+                }
+            }// Получили Фирму
+
+            if (job[i].indexOf(addres) == 0) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(addres.length, job[i].length).split(" ").join("")
+                dr = dr.split(',')
+                sql = sql + "(";
+                for (var y = 0; y < dr.length; y++) {
+                    sql = sql + "address LIKE" + " '%" + dr[y] + "%' "
+                    if (y < (dr.length - 1)) {
+                        sql = sql + "OR "
+                    }
+                    else { sql = sql + ")" }
+
+                }
+            }// Получили Адрес
+
+            if (job[i].indexOf(height) == 0) {
+                if (sql.length > 2) { sql = sql + " AND " }
+                var dr = job[i].substring(height.length, job[i].length).split(" ").join("")
                 dr = dr.split('*')
-                console.log(dr)
-                if (dr.length == 1 && dr[0].length == 10) { sql = sql + "work_date='" + dr[0] + "'" }
-                if (dr.length == 2 && dr[0].length == 10 && dr[1].length == 10) { sql = sql + "(work_date>'" + dr[0] + "' AND work_date<'" + dr[1] + "')" }
-            }
-            else { ctx.reply('У вас что-то не то с датой') }
-        }// Получили Дату
+                if (dr.length == 1) { sql = sql + "height='" + dr[0] + "'" }
+                if (dr.length == 2) { sql = sql + "(height>'" + dr[0] + "' AND height<'" + dr[1] + "')" }
+
+            }// Получили Высоту
+
+            if (job[i].indexOf(data) == 0) {
+
+                if (job[i].indexOf('*') !== '-1' && job[i].indexOf(',') == '-1' && job[i].length < 30) {
+                    if (sql.length > 2) { sql = sql + " AND " }
+                    var dr = job[i].substring(data.length, job[i].length).split(" ").join("")
+                    dr = dr.split('*')
+
+                    if (dr.length == 1 && dr[0].length == 10) { sql = sql + "work_date='" + dr[0] + "'" }
+                    if (dr.length == 2 && dr[0].length == 10 && dr[1].length == 10) { sql = sql + "(work_date>'" + dr[0] + "' AND work_date<'" + dr[1] + "')" }
+                }
+                else { ctx.reply('У вас что-то не то с датой') }
+            }// Получили Дату
+
+        }
+        if (sql.length > 5) {
+
+            // Итоговый запрос
+            sql = "SELECT * FROM work WHERE " + sql;
+
+            get_alldata(sql, (result) => {
+                shorttotelegram(result, ctx);
+            })
+            lastspecialsql = sql;
+            ctx.reply("Данные введены", ShowworkKeyboard())
+        }
+        else {
+            ctx.reply("Запрос не сформировался")
+        }
+
 
     }
-    if (sql.length > 5) {
-
-        // Итоговый запрос
-        sql = "SELECT * FROM work WHERE " + sql;
-
-        get_alldata(sql, (result) => {
-            shorttotelegram(result, ctx);
-        })
-        lastspecialsql = sql;
-        ctx.reply("Данные введены", ShowworkKeyboard())
+    catch (err) {
+        console.error('Ошибка в блоке fff', err);
     }
-    else {
-        ctx.reply("Запрос не сформировался")
-    }
-
-
-
 })
 
 

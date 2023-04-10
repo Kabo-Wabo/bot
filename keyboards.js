@@ -3,21 +3,43 @@ import { setDate, sliceryear } from './functions.js'
 
 export function DispMainMenu() {
     return Markup.keyboard([
-        ['Спец запрос', 'Мои', 'Доки'],
+        ['Спец', 'Мои', 'Статус', 'Доки', 'Долг'],
         [sliceryear(setDate(-4)), sliceryear(setDate(-3)), sliceryear(setDate(-2)), sliceryear(setDate(-1)), sliceryear(setDate(0)), sliceryear(setDate(+1))],
+    ]).resize().extra()
+}
+
+export function PutevkiMenu() {
+    return Markup.keyboard([
+        ['Не закрытые', 'Мои', 'Назад'],
+        [sliceryear(setDate(-4)), sliceryear(setDate(-3)), sliceryear(setDate(-2)), sliceryear(setDate(-1)), sliceryear(setDate(0)),],
+    ]).resize().extra()
+}
+
+export function BossMenu() {
+    return Markup.keyboard([
+        ['🤣', 'Должники', 'Доки'],
     ]).resize().extra()
 }
 
 export function ShowworkKeyboard() {
     return Markup.keyboard([
         ['Назад', 'Все', 'Кратко'],
+
+    ]).resize().extra()
+}
+
+export function statusKeyboard() {
+    return Markup.keyboard([
+        ['Не приняли', 'курящие', 'не в строю'],
+        ['Актуализация', 'Отобразить статус', 'Назад'],
+
     ]).resize().extra()
 }
 
 
 export function driverkeyboard() {
     return Markup.keyboard([
-        ['Работы за прошлый месяц', 'Актуальные работы', 'Мои документы'],
+        ['Завершенные работы', 'Актуальные работы', 'Инструкция'],
     ]).resize().extra()
 }
 
@@ -28,12 +50,12 @@ export function yesNoKeyboard() {
     ], { columns: 2 }).extra()
 }
 
-export function workerconfirmed() {
-	return	Markup.inlineKeyboard([
-				Markup.callbackButton('Закончил', 'end'),
-				Markup.callbackButton('Опаздываю', 'late'),
-				Markup.callbackButton('У меня проблемы', 'troubeles')
-			], { columns: 3 }).extra()
+export function workerconfirmed(id) {
+    return Markup.inlineKeyboard([
+        Markup.callbackButton('Закончил', 'end' + id),
+        Markup.callbackButton('Отмена', 'cancel' + id),
+        Markup.callbackButton('Проблемы', 'late' + id)
+    ], { columns: 3 }).extra()
 }
 
 
@@ -47,7 +69,7 @@ export function specialKeyboard() {
     return Markup.keyboard([
         ['Водитель', 'Метраж', 'Даты', 'Диспетчер', 'Оплата'],
         ['Фирма содержит', 'Адрес содержит'],
-        ['Очистить запрос', 'Шаг назад', 'Произвести запрос' ]
+        ['Очистить запрос', 'Шаг назад', 'Произвести запрос']
     ]).resize().extra()
 }
 

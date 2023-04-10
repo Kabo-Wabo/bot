@@ -1,7 +1,10 @@
 import { drivers, disp } from './drivers.js'
 import mysql from "mysql2";
-import { setDate } from '../functions.js'
+import { actualizator, changeApprove, workchanged } from '../functions.js'
 import { sqlparams } from '../config.js'
+
+
+
 
 export function updatework(job, id, ctx) {
 
@@ -21,6 +24,8 @@ export function updatework(job, id, ctx) {
 			dispid = entry[1];
 		}
 	})
+
+	var approver = changeApprove(job[2], job[10]);
 
 
 	const connection = mysql.createConnection(sqlparams)
@@ -44,15 +49,19 @@ export function updatework(job, id, ctx) {
 		",manager_name = '" + jobdisp + "'" +
 		",payment_type = '" + type + "'" +
 		",payment_value =  '" + value + "'" +
-		",work_date = '" + setDate(+1) + "'" +
+		",work_date = '" + job[10] + "'" +
+		",approved_by_driver = '" + approver + "'" +
 		" WHERE id = " + id + "";
 
 
 	connection.query(sql, function (err) {
 		if (err) throw err;
 		else {
+
 			ctx.reply("Работа отредактирована");
 			console.log("Отредактировали!")
+			workchanged(job, driverid);
+			actualizator()
 			connection.end(function (err) {
 				if (err) {
 					return console.log("Ошибка: " + err.message);
