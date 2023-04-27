@@ -4,7 +4,7 @@ import session from 'telegraf/session.js'
 import { stage } from './scenes/disp/addworkScene.js'
 import { whoareyou } from './controllers/check_id.js'
 import { add_newanon } from './db.js'
-import { DolgLoader } from './functions.js'
+
 
 
 
@@ -50,8 +50,9 @@ bot.on('text', ctx => {
 				//ctx.replyWithHTML('Привет <b>Гев</b> ты в режиме <b>босса!</b>')
 				ctx.scene.enter('gev')
 			}
-			if (d.role ==5 ){
-			DolgLoader()
+			if (d.role == 5) {
+				ctx.scene.enter('supergev')
+
 
 			}
 			if (d == 3) {

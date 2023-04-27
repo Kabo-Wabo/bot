@@ -7,13 +7,14 @@ import driver from '../driver/driverscene.js'
 import stat from './status.js'
 import ywork from './showWork.js'
 import putevki from './putevki.js'
+import supergev from '../admin/supergev.js'
 import gev from '../boss/gev.js'
 import docs from './docs.js'
 import specQuery from './specQuery.js'
 import { bot } from '../../app.js'
 
 export const addworkScene = new Scene('addwork')
-export const stage = new Stage([addworkScene, ywork, specQuery, docs, driver, stat, putevki,gev])
+export const stage = new Stage([addworkScene, ywork, specQuery, docs, driver, stat, putevki,gev,supergev])
 
 
 addworkScene.enter((ctx) => {

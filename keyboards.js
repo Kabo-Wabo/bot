@@ -21,6 +21,14 @@ export function BossMenu() {
     ]).resize().extra()
 }
 
+export function SupGevMenu() {
+    return Markup.keyboard([
+        ['🤣', 'Должники', 'Доки','хуй','нуль'],
+        ['в','а','г','к','б','ф']
+    ]).resize().extra()
+}
+
+
 export function ShowworkKeyboard() {
     return Markup.keyboard([
         ['Назад', 'Все', 'Кратко'],
@@ -47,6 +55,13 @@ export function yesNoKeyboard() {
     return Markup.inlineKeyboard([
         Markup.callbackButton('Да', 'yes'),
         Markup.callbackButton('Нет', 'no')
+    ], { columns: 2 }).extra()
+}
+
+export function FirmChoser() {
+    return Markup.inlineKeyboard([
+        Markup.callbackButton('М', 'm'),
+        Markup.callbackButton('С', 's')
     ], { columns: 2 }).extra()
 }
 

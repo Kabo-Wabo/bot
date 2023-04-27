@@ -4,10 +4,10 @@ import { get_alldata } from './db.js'
 import { bot } from './app.js'
 import { drivers, disp } from './controllers/drivers.js'
 import { updatework } from './controllers/update.js'
-import fs from 'fs'
+import fs from 'fs';
 import mysql from "mysql2";
 import { poolsql } from './config.js'
-
+import https from 'https';
 //import { get } from 'https'
 // Функция для вывода всех данных в телеграм
 export function worktotelegram(allwork, ctx) {
@@ -628,101 +628,169 @@ export function workchanged(job, id_driver) {
 	}
 }
 
-// Функция выводит должников
-export function dolg(ctx) {
+function DolgStatInfo(ctx) {
+	var a = 0
+	var b = 0
+	var k = 0
+	var p = 0
+	var g = 0
+	var f = 0
 
-	//Если это я или Гев, то выдать еще общую статистику по долгам
-	if (ctx.update.message.from.id == 263367241 || ctx.update.message.from.id == 285512812) {
-		var a = 0
-		var b = 0
-		var k = 0
-		var p = 0
-		var g = 0
-		var f = 0
-
-		get_alldata("SELECT dolg2,manager from kompany WHERE dolg2>0 AND status=0", (result) => {
-			result.forEach(function (value) {
-				if (value.manager == 'a') { a = a + value.dolg2 }
-				if (value.manager == 'b') { b = b + value.dolg2 }
-				if (value.manager == 'k') { k = k + value.dolg2 }
-				if (value.manager == 'p') { p = p + value.dolg2 }
-				if (value.manager == 'g') { g = g + value.dolg2 }
-				if (value.manager == 'f') { f = f + value.dolg2 }
-
-
-			})
-			let alldolg = a + b + k + p + g + f;
-			a = "Аршак: <strong>" + Math.round(a / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * a / alldolg) + "%";
-			b = "Босс:  <strong>" + Math.round(b / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * b / alldolg) + "%";
-			k = "Вова:  <strong>" + Math.round(k / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * k / alldolg) + "%";
-			p = "Крис:  <strong>" + Math.round(p / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * p / alldolg) + "%";
-			g = "Гор:   <strong>" + Math.round(g / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * g / alldolg) + "%";
-			f = "Фатих: <strong>" + Math.round(f / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * f / alldolg) + "%";
-
-			ctx.replyWithHTML(`
- Общая сумма долга на \n${setDate(0)}
- <b>${alldolg.toLocaleString('ru')}р</b>
- ------------------------------
- ${f}
- ${b}
- ${g}
- ${a}
- ${k}
- ${p}
- `);
+	get_alldata("SELECT dolg2,manager from kompany WHERE dolg2>0 AND status=0", (result) => {
+		result.forEach(function (value) {
+			if (value.manager == 'a') { a = a + value.dolg2 }
+			if (value.manager == 'b') { b = b + value.dolg2 }
+			if (value.manager == 'k') { k = k + value.dolg2 }
+			if (value.manager == 'p') { p = p + value.dolg2 }
+			if (value.manager == 'g') { g = g + value.dolg2 }
+			if (value.manager == 'f') { f = f + value.dolg2 }
 
 
 		})
+		let alldolg = a + b + k + p + g + f;
+		a = "Аршак: <strong>" + Math.round(a / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * a / alldolg) + "%";
+		b = "Босс:  <strong>" + Math.round(b / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * b / alldolg) + "%";
+		k = "Вова:  <strong>" + Math.round(k / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * k / alldolg) + "%";
+		p = "Крис:  <strong>" + Math.round(p / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * p / alldolg) + "%";
+		g = "Гор:   <strong>" + Math.round(g / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * g / alldolg) + "%";
+		f = "Фатих: <strong>" + Math.round(f / 1000).toLocaleString('ru') + "</strong> k \t" + Math.round(100 * f / alldolg) + "%";
+
+		ctx.replyWithHTML(`
+Общая сумма долга на \n${setDate(0)}
+<b>${alldolg.toLocaleString('ru')}р</b>
+------------------------------
+${f}
+${b}
+${g}
+${a}
+${k}
+${p}
+`);
+
+
+	})
+}
+
+// Функция выводит должников
+export function dolg(ctx, nuller) {
+
+	//Если это я или Гев, то выдать еще общую статистику по долгам
+	if (ctx.update.message.from.id == 263367241 || ctx.update.message.from.id == 285512812) {
+		DolgStatInfo(ctx)
 	}
 
 
 	// Далее выдать инфу по должнику исходя из файла диспетчеров, в котором буква диспетчера которая соответсвует букве в БД
 	let letter = 0;
 	let name
+
+	//Проверяем какая буква соответсвует диспетчеру
 	disp.forEach(function (entry) {
 		if (ctx.update.message.from.id == entry[1]) {
 			letter = entry[2]
 			name = entry[0]
 		}
 	})
+
+	// Если буква не 0, то 
 	if (letter !== 0) {
-		var massive = 'Монте ' + setDate(0) + "\nДолги " + name + "\n"
-		var razn
-		var i
-		var slovo
-		get_alldata("Select * from kompany WHERE STATUS=0 AND manager='" + letter + "' AND dolg2>0 ORDER BY name", (result) => {
-			result.forEach(function (item) {
-				razn = item.dolg1 - item.dolg2
-				if (razn < 0) { slovo = '⬆️' }
-				if (razn > 0) { slovo = '⬇️' }
-				item.name = (item.name).replace('ООО', '');
-				item.name = (item.name).replace('АО', '');
-				item.name = (item.name).split('(')[0]
-				item.name = (item.name).replace('  ', '');
-				item.name = (item.name).replace('Представительство«АНТ', '');
-				if (item.dolg1 == 0) { razn = '' }
-				else { razn = "" + slovo + Math.abs(razn).toLocaleString('ru') }
-				massive = massive + (("\n" + item.name + " <b>" + item.dolg2.toLocaleString('ru') + "</b> р  " + razn))
-				massive = massive + "\n-----"
-				i++
-			})
+		var sql
+		var senddisp = 0
+
+		//Если это я - то мне отправить всех должников
+		if (ctx.update.message.from.id == 285512812 && nuller ==0  ) {
+			sql = "Select * from kompany WHERE STATUS=0  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}
+
+		if (ctx.update.message.from.id == 285512812 && nuller ==1  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='0' AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+			//['в','а','г','к','б','ф']
+		}
+
+		if (ctx.update.message.from.id == 285512812 && nuller ==2  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='k'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}
+		if (ctx.update.message.from.id == 285512812 && nuller ==3  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='a'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}
+		if (ctx.update.message.from.id == 285512812 && nuller ==4  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='g'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}
+		if (ctx.update.message.from.id == 285512812 && nuller ==5  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='p'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}
+		if (ctx.update.message.from.id == 285512812 && nuller ==6  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='b'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}						
+		if (ctx.update.message.from.id == 285512812 && nuller ==7  ) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='f'  AND dolg2>0 ORDER BY name";
+			senddisp = 1;
+		}		
+		if(ctx.update.message.from.id != 285512812) {
+			sql = "Select * from kompany WHERE STATUS=0 AND manager='" + letter + "' AND dolg2>0 ORDER BY name"
+		}
+		console.log(sql);
+		get_alldata(sql, (result) => {
+			var massive = DolgPreparer(result, name, senddisp)
 			if (massive.length > 1) { ctx.replyWithHTML(massive); }
 		})
 	}
+}
 
+export function after_add_send() {
+	disp.forEach(function (entry){
+	get_alldata(`Select * from kompany WHERE STATUS=0 AND manager='${entry[2]}' AND dolg2>0 ORDER BY name`, (result) => {
+		var massive = DolgPreparer(result, entry[0], 0)
+		bot.telegram.sendMessage(entry[1], massive,{parse_mode:'HTML'});
+		//ctx.replyWithHTML(massive);
+	})	
+})
 
+}
 
+// Функция по выводу должников
+function DolgPreparer(result, name, senddisp) {
+	var razn
+	var i
+	var slovo
+	var dispname = ''
+	var massive = 'Монте ' + setDate(0) + "\nДолги " + name + "\n"
+	result.forEach(function (item) {
+		razn = item.dolg1 - item.dolg2
+		if (razn < 0) { slovo = '⬆️' }
+		if (razn > 0) { slovo = '⬇️' }
+		item.name = (item.name).replace('ООО', '');
+		item.name = (item.name).replace('АО', '');
+		item.name = (item.name).split('(')[0]
+		item.name = (item.name).replace('  ', '');
+		item.name = (item.name).replace('Представительство«АНТ', '');
+		if (item.dolg1 == 0) { razn = '' }
+		else { razn = "" + slovo + Math.abs(razn).toLocaleString('ru') }
+		if (senddisp == 1) { dispname = item.manager }
+		massive = massive + (("\n" + dispname + " " + item.name + " <b>" + item.dolg2.toLocaleString('ru') + "</b> р  " + razn))
+		massive = massive + "\n-----"
+		i++
+	})
+	return massive;
 }
 
 // Я не знаю как закрыть этот пул чтобы освободить память((
 var pool = mysql.createPool(poolsql).promise()
-export function DolgLoader() {
 
-	
+
+
+export function DolgLoader(ctx,filename) {
 
 	let dolgmas = []
 	var i = 0
-	let fileContent = fs.readFileSync('./123.txt', 'utf8');
+	let fileContent = fs.readFileSync(`./${filename}`, 'utf8');
 	let result = String(fileContent);
 	result = result.replace(/\,[0-9][0-9]/gi, "");
 	result = result.replace(/([0-9])(\ )([0-9])/gi, "$1$3");
@@ -737,57 +805,55 @@ export function DolgLoader() {
 		dolgmas[i] = rev[0] + "долг:" + rev[5]
 		i++
 	})
+	var kompany
+	if(filename=='monte.txt'){ kompany = 'm'} 
+	if(filename=='sputnik.txt'){ kompany = 's'} 
+	
+	sukablyad(dolgmas, pool, kompany)
 
-	sukablyad(dolgmas,pool)
+	async function sukablyad(dolgmas, pool, kompany) {
+		dolgmas.forEach(function (inffromfile) {
+			var firm = inffromfile.split("долг:")[0];
+			var dolg = inffromfile.split("долг:")[1];
+			pool.execute(`SELECT name,status,d1,d2,dolg1,dolg2,firm from kompany WHERE name='${firm}' && firm='${kompany}' `).then((zbs) => {
+				var result = zbs[0]
+				if (result.length == 1) {
+					if (dolg == result[0].dolg2) {
+						console.log(`${firm} Долг не изменился `)
+					}
 
-async function sukablyad(dolgmas,pool){
-	dolgmas.forEach(function (inffromfile) {
-		var firm = inffromfile.split("долг:")[0];
-		var dolg = inffromfile.split("долг:")[1];
-		pool.execute(`SELECT name,status,d1,d2,dolg1,dolg2 from kompany WHERE name='${firm}' && firm='m' `).then((zbs) => {
-			var result=zbs[0]
-			//console.log(result);
-			if (result.length==1) {
-				if (dolg == result[0].dolg2) {
-					console.log(`${firm} Долг не изменился `)
+					if (dolg != result[0].dolg2) {
+						var dateold = (result[0].d2).toISOString().split('T')[0]
+						pool.execute(`UPDATE kompany SET dolg1=${result[0].dolg2}, dolg2=${dolg}, d1='${dateold}', d2='${setDate(0)}', status=0 WHERE name='${firm}' && firm='${kompany}'`).then(() => { console.log(`${firm} Обновлен долг фирмы `); })
+					}
 				}
-
-				if (dolg != result[0].dolg2) {
-					var dateold = (result[0].d2).toISOString().split('T')[0]
-					pool.execute(`UPDATE kompany SET dolg1=${result[0].dolg2}, dolg2=${dolg}, d1='${dateold}', d2='${setDate(0)}', status=0 WHERE name='${firm}' && firm='m'`).then(() => { console.log(`${firm} Обновлен долг фирмы `); })
+				//  В файле есть дублеж фирм АСТ и МОНОЛИТ СТРОЙ - поэтому такая реализация
+				if (result.length == 0) {
+					pool.execute(`INSERT INTO kompany (NAME,d2,dolg2,firm) VALUES ('${firm}','${setDate(0)}',${dolg},'${kompany}')`).then(() => { console.log(`${firm} добавлена новая фирма `); })
 				}
-			}
-			//  В файле есть дублеж фирм АСТ и МОНОЛИТ СТРОЙ - поэтому такая реализация
-			if(result.length==0)  {
-				pool.execute(`INSERT INTO kompany (NAME,d2,dolg2,firm) VALUES ('${firm}','${setDate(0)}',${dolg},'m')`).then(() => { console.log(`${firm} добавлена новая фирма `); })
-			}
+			})
 		})
-	})
-}
-		// 	  pool.query(`SELECT name,status,d1,d2,dolg1,dolg2 from kompany WHERE name='${firm}' && firm='m' `, function (err, result) {
-
-		// if (result.length == 1) {
-		// 	var dateold = (result[0].d2).toISOString().split('T')[0]
-		// 	if (result.length == 1) {
-		// 		if (dolg == result[0].dolg2) {
-		// 			console.log(`${firm} Долг не изменился `)
-		// 		}
-
-		// 		if (dolg != result[0].dolg2) {
-		// 			 pool.query(`UPDATE kompany SET dolg1=${result[0].dolg2}, dolg2=${dolg}, d1='${dateold}', d2='${setDate(0)}', status=0 WHERE name='${firm}' && firm='m'`, function (err, result) {
-		// 				console.log(`${firm} Обновлен долг фирмы `);
-		// 			})
-		// 		}
-		// 	}
-
-		// }
-		// if (result.length == 0) {
-		// 	pool.query(`INSERT INTO kompany (NAME,d2,dolg2,firm) VALUES ('${firm}','${setDate(0)}',${dolg},'m')`, function (err, result) {
-		// 		console.log(`${firm} Добавлена новая фирма`);
-		// 	})
-		// }
-		// })
-
-
+	}
+	ctx.reply("Долги обновлены")
+	// Я не знаю как закрыть соединение(
 
 }
+
+
+export function newfile(url, ctx, firm) {
+	var filename = 'error.txt'
+	if (firm=='m') { filename = "monte.txt"}
+	if (firm=='s') { filename = "sputnik.txt"}
+	console.log(firm);
+	const file = fs.createWriteStream(filename);
+	const request = https.get(url, function (response) {
+		response.pipe(file);
+		file.on("finish", () => {
+			file.close();
+			console.log("Download Completed");
+			ctx.reply("Файл успешно скачался и обновился")
+			DolgLoader(ctx,filename);
+		});
+	});
+} 
+
